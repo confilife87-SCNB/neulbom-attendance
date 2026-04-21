@@ -24,7 +24,7 @@ const API = {
   },
 
   // ── 핵심 통신 함수 ──
-  async call(action, params = {}) {
+async call(action, params = {}, timeoutMs = 30000) {
     const secretToken = this.getSecretToken();
     const sessionToken = this.getSessionToken();
 
@@ -36,7 +36,7 @@ const API = {
     };
 
     const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 30000);
+    const timeout = setTimeout(() => controller.abort(), timeoutMs);
 
     try {
       const res = await fetch(CONFIG.GAS_URL, {
@@ -61,7 +61,7 @@ const API = {
 
     } catch (err) {
       if (err.name === 'AbortError') {
-        throw new Error('요청 시간 초과(30초). 네트워크를 확인하세요.');
+        throw new Error('요청 시간 초과. 서류 생성은 수분이 소요됩니다.');
       }
       throw err;
     } finally {
@@ -155,13 +155,13 @@ const API = {
     API.call('getAttendanceDocList'),
 
   generateAttendanceDoc: (month, targetProg) =>
-    API.call('generateAttendanceDoc', { month, targetProg }),
+    API.call('generateAttendanceDoc', { month, targetProg }, 600000),
 
   generateActivityDoc: (month, targetProg) =>
-    API.call('generateActivityDoc', { month, targetProg }),
+    API.call('generateActivityDoc', { month, targetProg }, 600000),
 
   finalizeMonth: (month, docType) =>
-    API.call('finalizeMonth', { month, docType }),
+    API.call('finalizeMonth', { month, docType }, 600000),
 
   // ── 학생관리 ──
   getAdminStudentList: (grade, classNum, targetDate) =>
