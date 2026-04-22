@@ -177,5 +177,9 @@ async call(action, params = {}, timeoutMs = 30000) {
     API.call('getActivityLogList', { month, progName }),
 
   updateActivityLog: (rowIndex, newContent) =>
-    API.callWithRetry('updateActivityLog', { rowIndex, newContent })
+    API.callWithRetry('updateActivityLog', { rowIndex, newContent }),
+
+  // ── 강사 미입력현황 ──
+  getInstMissingList: (progName, month) =>
+    API.call('getInstMissingList', { progName, month })
 };
