@@ -559,8 +559,13 @@
         </div>
       </div>
 
-      <div style="background:rgba(9,132,227,0.06); border:1px solid rgba(9,132,227,0.2); padding:8px 12px; border-radius:var(--radius-sm); margin-bottom:10px; font-size:0.78rem; color:var(--blue-deep); font-weight:600;">
-        ① 출결 체크 → ② 활동일지 작성 → ③ 최종 저장
+      <div style="display:flex; gap:8px; align-items:center; margin-bottom:10px;">
+        <div style="flex:1; background:rgba(9,132,227,0.06); border:1px solid rgba(9,132,227,0.2); padding:8px 12px; border-radius:var(--radius-sm); font-size:0.78rem; color:var(--blue-deep); font-weight:600;">
+          ① 출결 체크 → ② 활동일지 작성 → ③ 최종 저장
+        </div>
+        <button class="btn-back" onclick="openInstMissingView()" style="white-space:nowrap; padding:8px 12px; font-size:0.82rem;">
+          📋 미입력현황
+        </button>
       </div>
 
       <div class="status-dashboard">
@@ -598,6 +603,75 @@
     </div>
   </div>
 
+ <!-- ==========================================
+       🔵 강사 - 미입력현황
+       ========================================== -->
+  <div id="inst-missing-view" class="view-section">
+    <div class="view-content" style="display:flex; flex-direction:column;">
+      <div class="nav-top">
+        <button class="btn-back" onclick="closeInstMissingView()">← 뒤로</button>
+        <span style="font-weight:700; color:var(--blue-deep); font-size:0.95rem;">📋 미입력 현황</span>
+        <button class="btn-back" onclick="loadInstMissingList()">🔄 새로고침</button>
+      </div>
+
+      <div class="select-group" style="flex-direction:row; align-items:center; gap:10px; margin-bottom:12px;">
+        <label style="margin:0; white-space:nowrap; font-size:0.82rem;">📅 조회 월</label>
+        <select id="inst-missing-month" onchange="loadInstMissingList()" style="flex:1;">
+          <option value="3월">3월</option><option value="4월">4월</option>
+          <option value="5월">5월</option><option value="6월">6월</option>
+          <option value="7월">7월</option><option value="8월">8월</option>
+          <option value="9월">9월</option><option value="10월">10월</option>
+          <option value="11월">11월</option><option value="12월">12월</option>
+        </select>
+      </div>
+
+      <div style="background:rgba(9,132,227,0.06); border:1px solid rgba(9,132,227,0.2); padding:10px 12px; border-radius:var(--radius-sm); margin-bottom:12px; font-size:0.82rem; color:var(--blue-deep);">
+        ✅ 출결 + 활동일지 모두 완료된 날짜는 표시되지 않습니다.
+      </div>
+
+      <div class="status-dashboard" style="grid-template-columns:repeat(2,1fr); margin-bottom:12px;">
+        <div class="stat-box">
+          <div class="stat-num" id="missing-attend-count" style="color:var(--red-deep);">0</div>
+          <div class="stat-label">출결 미입력</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-num" id="missing-activity-count" style="color:var(--orange-deep);">0</div>
+          <div class="stat-label">활동일지 미입력</div>
+        </div>
+      </div>
+
+      <div id="inst-missing-list"></div>
+    </div>
+  </div>
+
+  <!-- 🔵 강사 소급입력 모달 -->
+  <div id="inst-missing-modal" class="modal-overlay" onclick="if(event.target===this) closeInstMissingModal()">
+    <div class="modal-content">
+      <div class="modal-title" id="inst-missing-modal-title">미입력 데이터 입력</div>
+
+      <div id="inst-missing-attend-area" style="display:none; margin-bottom:16px;">
+        <div style="font-size:0.82rem; font-weight:700; color:var(--text-sub); margin-bottom:8px;">📋 출결 입력 (소급)</div>
+        <div style="font-size:0.8rem; color:var(--orange-deep); margin-bottom:10px; padding:8px; background:rgba(253,203,110,0.1); border-radius:var(--radius-sm);">
+          ⚠️ 소급 입력입니다. 관리자에게 자동 알림이 전송됩니다.
+        </div>
+        <div id="inst-missing-student-list" style="max-height:300px; overflow-y:auto;"></div>
+      </div>
+
+      <div id="inst-missing-activity-area" style="display:none; margin-bottom:16px;">
+        <div style="font-size:0.82rem; font-weight:700; color:var(--text-sub); margin-bottom:8px;">📝 활동일지 입력 (소급)</div>
+        <div style="font-size:0.8rem; color:var(--orange-deep); margin-bottom:10px; padding:8px; background:rgba(253,203,110,0.1); border-radius:var(--radius-sm);">
+          ⚠️ 소급 입력입니다. 관리자에게 자동 알림이 전송됩니다.
+        </div>
+        <textarea id="inst-missing-activity-content" placeholder="활동 내용을 입력하세요" style="min-height:100px; margin-bottom:8px;"></textarea>
+      </div>
+
+      <div style="display:flex; gap:8px; margin-top:12px;">
+        <button class="btn-action gray" style="flex:1; margin-top:0;" onclick="closeInstMissingModal()">취소</button>
+        <button class="btn-action blue" style="flex:2; margin-top:0;" onclick="saveInstMissingData()">💾 소급 저장</button>
+      </div>
+    </div>
+  </div>
+  
   <!-- ⭐ 저장 완료 요약 모달 (기억4) -->
   <div id="save-summary-modal" class="modal-overlay" onclick="if(event.target===this) closeSaveSummary()">
     <div class="modal-content" style="text-align:center;">
@@ -652,7 +726,7 @@
         <div style="font-size:0.82rem; font-weight:700; color:var(--text-sub); margin-bottom:10px;">
           📋 오늘의 현황 요약
         </div>
-        <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:8px;">
+        <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:8px;">
           <div class="stat-box" style="border-left:3px solid var(--red-deep);">
             <div class="stat-num" id="summary-unsubmit" style="color:var(--red-deep);">-</div>
             <div class="stat-label">미제출</div>
@@ -664,6 +738,10 @@
           <div class="stat-box" style="border-left:3px solid var(--orange-deep);">
             <div class="stat-num" id="summary-warning" style="color:#e17055;">-</div>
             <div class="stat-label">경고학생</div>
+          </div>
+          <div class="stat-box" style="border-left:3px solid var(--purple-deep);">
+            <div class="stat-num" id="summary-late-submit" style="color:var(--purple-deep);">-</div>
+            <div class="stat-label">소급입력</div>
           </div>
         </div>
       </div>
@@ -734,6 +812,7 @@
         <div class="hr-tabs" style="margin-bottom:12px;">
           <button class="btn-hr-tab active-purple" id="submit-sub-attend" onclick="switchSubmitSubTab('attend')" style="border-color:var(--purple); color:var(--purple-deep);">📋 출결 미제출</button>
           <button class="btn-hr-tab" id="submit-sub-activity" onclick="switchSubmitSubTab('activity')" style="border-color:var(--purple); color:var(--purple-deep);">📝 활동일지 미제출</button>
+          <button class="btn-hr-tab" id="submit-sub-late" onclick="switchSubmitSubTab('late')" style="border-color:var(--purple); color:var(--purple-deep);">🔄 소급입력</button>
         </div>
 
         <div class="status-dashboard" style="grid-template-columns: repeat(2, 1fr); margin-bottom:16px;">
@@ -2602,6 +2681,11 @@ async function loadAdminData() {
       }).length;
       document.getElementById('summary-warning').innerText = warningCount;
     }
+
+    // 소급입력 건수
+    var lateCount = submitRawData ? (submitRawData.lateSubmitCount || 0) : 0;
+    var lateEl = document.getElementById('summary-late-submit');
+    if (lateEl) lateEl.innerText = lateCount;
   }
 
   // 기간 범위 표시
@@ -2739,16 +2823,16 @@ async function loadAdminData() {
   function switchSubmitSubTab(tab) {
     currentSubmitSubTab = tab;
 
-    document.getElementById('submit-sub-attend').classList.remove('active-purple');
-    document.getElementById('submit-sub-attend').classList.remove('active');
-    document.getElementById('submit-sub-activity').classList.remove('active-purple');
-    document.getElementById('submit-sub-activity').classList.remove('active');
+    ['attend', 'activity', 'late'].forEach(function(t) {
+      var btn = document.getElementById('submit-sub-' + t);
+      if (btn) {
+        btn.classList.remove('active-purple');
+        btn.classList.remove('active');
+      }
+    });
 
-    if (tab === 'attend') {
-      document.getElementById('submit-sub-attend').classList.add('active-purple');
-    } else {
-      document.getElementById('submit-sub-activity').classList.add('active-purple');
-    }
+    var activeBtn = document.getElementById('submit-sub-' + tab);
+    if (activeBtn) activeBtn.classList.add('active-purple');
 
     renderSubmitList();
   }
@@ -2840,6 +2924,28 @@ async function loadSubmissionStatus() {
         html += '</div>';
       });
     }
+
+  // 소급입력 탭
+  if (currentSubmitSubTab === 'late') {
+    html = '';
+    var lateList = result.lateSubmits || [];
+
+    if (lateList.length === 0) {
+      html += '<div style="text-align:center; padding:24px; color:var(--text-sub);">🎉 소급입력 이력이 없습니다.</div>';
+    } else {
+      html += '<div class="section-title" style="color:var(--purple-deep); font-size:0.9rem; margin-top:8px;">🔄 소급입력 이력 (' + lateList.length + '건)</div>';
+      lateList.forEach(function(h) {
+        html += '<div class="record-card" style="border-left:3px solid var(--purple-deep);">';
+        html += '  <div class="record-info">';
+        html += '    <strong>' + escapeHtml(h.date) + ' ' + escapeHtml(h.prog) + ' (' + escapeHtml(h.period) + ')</strong>';
+        html += '    강사: ' + escapeHtml(h.instructor || '미등록') + '<br>';
+        html += '    소급시간: ' + escapeHtml(h.lateSubmitTime || '-');
+        html += '  </div>';
+        html += '  <span class="badge" style="background:rgba(108,92,231,0.1); color:var(--purple-deep);">🔄 소급</span>';
+        html += '</div>';
+      });
+    }
+  }
 
     listDiv.innerHTML = html;
   }
@@ -3972,6 +4078,193 @@ async function saveUserPwdChange() {
     showLoading(false);
   }
 }
+    // ==========================================
+  // 📋 강사 미입력현황 로직
+  // ==========================================
+
+  var instMissingData = [];
+  var instMissingTarget = null;
+
+  function openInstMissingView() {
+    var currentMonth = (new Date().getMonth() + 1) + '월';
+    document.getElementById('inst-missing-month').value = currentMonth;
+    document.getElementById('inst-dashboard').style.display = 'none';
+    document.getElementById('inst-missing-view').style.display = 'flex';
+    loadInstMissingList();
+  }
+
+  function closeInstMissingView() {
+    document.getElementById('inst-missing-view').style.display = 'none';
+    document.getElementById('inst-dashboard').style.display = 'flex';
+  }
+
+  async function loadInstMissingList() {
+    showLoading(true);
+    var month = document.getElementById('inst-missing-month').value;
+    try {
+      const data = await API.getInstMissingList(currentProg, month);
+      instMissingData = data || [];
+      renderInstMissingList();
+    } catch (err) {
+      showToast('❌ ' + err.message);
+    } finally {
+      showLoading(false);
+    }
+  }
+
+  function renderInstMissingList() {
+    var listDiv = document.getElementById('inst-missing-list');
+    var attendCount = 0;
+    var activityCount = 0;
+
+    instMissingData.forEach(function(item) {
+      if (!item.attendDone) attendCount++;
+      if (!item.activityDone) activityCount++;
+    });
+
+    document.getElementById('missing-attend-count').innerText = attendCount;
+    document.getElementById('missing-activity-count').innerText = activityCount;
+
+    if (instMissingData.length === 0) {
+      listDiv.innerHTML = '<div style="text-align:center; padding:32px; color:var(--text-sub);">🎉 이번 달 미입력 항목이 없습니다!</div>';
+      return;
+    }
+
+    var html = '';
+    instMissingData.forEach(function(item, idx) {
+      var attendBadge = item.attendDone
+        ? '<span class="badge badge-green">✅ 출결완료</span>'
+        : '<span class="badge badge-red">❌ 출결미입력</span>';
+      var activityBadge = item.activityDone
+        ? '<span class="badge badge-green">✅ 활동일지완료</span>'
+        : '<span class="badge badge-orange">❌ 활동일지미입력</span>';
+
+      html += '<div class="record-card" style="flex-direction:column; align-items:flex-start; gap:8px;">';
+      html += '  <div class="record-info"><strong>' + escapeHtml(item.date) + ' (' + escapeHtml(item.day) + ') ' + escapeHtml(item.period) + '</strong></div>';
+      html += '  <div style="display:flex; gap:6px; flex-wrap:wrap;">' + attendBadge + ' ' + activityBadge + '</div>';
+      html += '  <button class="btn-action blue" style="width:100%; margin:0; padding:10px; font-size:0.85rem;" onclick="openInstMissingModal(' + idx + ')">✏️ 입력하기</button>';
+      html += '</div>';
+    });
+
+    listDiv.innerHTML = html;
+  }
+
+  function openInstMissingModal(idx) {
+    instMissingTarget = instMissingData[idx];
+    var item = instMissingTarget;
+
+    document.getElementById('inst-missing-modal-title').innerText =
+      item.date + ' ' + item.period + ' — 소급 입력';
+
+    var attendArea = document.getElementById('inst-missing-attend-area');
+    var activityArea = document.getElementById('inst-missing-activity-area');
+
+    if (!item.attendDone) {
+      attendArea.style.display = 'block';
+      loadInstMissingStudents(item.date, item.period);
+    } else {
+      attendArea.style.display = 'none';
+    }
+
+    if (!item.activityDone) {
+      activityArea.style.display = 'block';
+      document.getElementById('inst-missing-activity-content').value = '';
+    } else {
+      activityArea.style.display = 'none';
+    }
+
+    document.getElementById('inst-missing-modal').style.display = 'flex';
+  }
+
+  async function loadInstMissingStudents(date, period) {
+    var studentListDiv = document.getElementById('inst-missing-student-list');
+    studentListDiv.innerHTML = '<div style="text-align:center; padding:12px; color:var(--text-sub);">학생 목록 로딩 중...</div>';
+
+    try {
+      const result = await API.getInstDashboardData(
+        currentProg, instMissingTarget.day, instMissingTarget.period, date
+      );
+      var existing = result.existing || {};
+      var tempStudents = result.students.map(function(s) {
+        var key = s.grade + "_" + s.classNum + "_" + s.name;
+        var prev = existing[key];
+        return {
+          grade: s.grade, classNum: s.classNum, name: s.name,
+          status: prev ? prev.status : '출석',
+          reason: prev ? prev.reason : ''
+        };
+      });
+
+      var html = '';
+      tempStudents.forEach(function(s, sidx) {
+        html += '<div style="display:flex; align-items:center; gap:8px; padding:8px; border-bottom:1px solid var(--border);">';
+        html += '  <span style="flex:1; font-size:0.85rem; font-weight:600;">' + escapeHtml(s.grade) + '-' + escapeHtml(s.classNum) + ' ' + escapeHtml(s.name) + '</span>';
+        html += '  <select id="missing-st-' + sidx + '" style="width:80px; padding:6px; font-size:0.82rem;">';
+        ['출석','지각','조퇴','결석'].forEach(function(st) {
+          html += '<option value="' + st + '"' + (s.status === st ? ' selected' : '') + '>' + st + '</option>';
+        });
+        html += '  </select>';
+        html += '</div>';
+      });
+
+      studentListDiv.innerHTML = html || '<div style="padding:12px; color:var(--text-sub);">학생이 없습니다.</div>';
+      studentListDiv._students = tempStudents;
+    } catch (err) {
+      studentListDiv.innerHTML = '<div style="padding:12px; color:var(--red-deep);">❌ 로딩 실패: ' + err.message + '</div>';
+    }
+  }
+
+  function closeInstMissingModal() {
+    document.getElementById('inst-missing-modal').style.display = 'none';
+    instMissingTarget = null;
+  }
+
+  async function saveInstMissingData() {
+    if (!instMissingTarget) return;
+    if (!confirm('소급 입력하시겠습니까?\n\n관리자에게 소급입력 알림이 전송됩니다.')) return;
+
+    var item = instMissingTarget;
+    showLoading(true);
+
+    try {
+      if (!item.attendDone) {
+        var studentListDiv = document.getElementById('inst-missing-student-list');
+        var students = studentListDiv._students || [];
+        var attendanceList = students.map(function(s, sidx) {
+          var sel = document.getElementById('missing-st-' + sidx);
+          return {
+            grade: s.grade, classNum: s.classNum, name: s.name,
+            status: sel ? sel.value : '출석', reason: ''
+          };
+        });
+        await API.saveAttendanceData(item.date, currentProg, item.day, item.period, attendanceList, false, '');
+      }
+
+      if (!item.activityDone) {
+        var actContent = document.getElementById('inst-missing-activity-content').value.trim();
+        if (!actContent) {
+          showToast('활동 내용을 입력하세요.');
+          showLoading(false);
+          return;
+        }
+        var allPeriods = [];
+        if (programData[currentProg] && programData[currentProg][item.day]) {
+          allPeriods = programData[currentProg][item.day];
+        }
+        var periodsStr = allPeriods.length > 0 ? allPeriods.join(',') : item.period;
+        await API.saveActivityLog(item.date, currentProg, item.day, periodsStr, actContent, '');
+      }
+
+      closeInstMissingModal();
+      showToast('✅ 소급 입력 완료!');
+      loadInstMissingList();
+
+    } catch (err) {
+      showToast('❌ 저장 실패: ' + err.message);
+    } finally {
+      showLoading(false);
+    }
+  }
 </script>
 </body>
 </html>
